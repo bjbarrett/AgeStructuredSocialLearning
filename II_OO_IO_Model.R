@@ -1,5 +1,5 @@
 ###initial pop conditions
-timesteps <- 500 #length of simulation
+timesteps <- 600 #length of simulation
 
 ##parameters
 bn <- 1    ##avg broodsize of adult with non-adaptive behavior
