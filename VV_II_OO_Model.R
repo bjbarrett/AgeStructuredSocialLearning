@@ -1,15 +1,15 @@
 ###initial pop conditions
-timesteps <- 200 #length of simulation
+timesteps <- 5000 #length of simulation
 
 ##parameters
 bn <- 1    ##avg broodsize of adult with non-adaptive behavior
-ba <- 6*bn ##avg broodsize of adult with adaptive behavior. ba > bn
-p_as <- 0.2  #prob an adapted adult produces stressed offspring
+ba <- 2.5*bn ##avg broodsize of adult with adaptive behavior. ba > bn
+p_as <- 0.1  #prob an adapted adult produces stressed offspring
 p_ns <- 0.8  #prob an nonadapted adult produces stressed offspring
 s <- 0.5	#prob individual learner succesfully acquires adaptive behavior
-U <- 0.4  #prob environment changes states
-mu_s <- 0.1	#mortality rate of social learners
-mu_i <- 0.11 #mortality rate of individual learners
+U <- 0.1  #prob environment changes states
+mu_s <- 0.2	#mortality rate of social learners
+mu_i <- 0.3 #mortality rate of individual learners
 #mu_n <- 1 # excess mortality factor of non-adapted individuals (to be added at some point with overlapping generations)
 
 #create bins to store recursion values for each type
@@ -39,27 +39,28 @@ fn <- rep(0,timesteps + 1)		#weird fun-cundity metric for nonadapted vertical le
 
 #initial simulation values
 N0 <- 180
-n_VVAa[1] <- 100
-n_VVAn[1] <- 00
-n_IIAa[1] <- 100
-n_IIAn[1] <- 00
-n_OOAa[1] <- 100
-n_OOAn[1] <- 0
+n_VVAa[1] <- 20
+n_VVAn[1] <- 20
+n_IIAa[1] <- 20
+n_IIAn[1] <- 20
+n_OOAa[1] <- 20
+n_OOAn[1] <- 20
 n_An[1] <- n_VVAn[1] + n_IIAn[1] + n_OOAn[1]
 n_Aa[1] <- n_VVAa[1] + n_IIAa[1] + n_OOAa[1]
 
-n_VVJH[1] <- 50
-n_VVJS[1] <- 50
-n_IIJH[1] <- 50
-n_IIJS[1] <- 50
-n_OOJH[1] <- 50
-n_OOJS[1] <- 50
+n_VVJH[1] <- 10
+n_VVJS[1] <- 10
+n_IIJH[1] <- 10
+n_IIJS[1] <- 10
+n_OOJH[1] <- 10
+n_OOJS[1] <- 10
 
 u[1] <- 0
 N[1] <- n_VVAa[1] + n_VVAn[1] + n_IIAa[1] + n_IIAn[1] + n_OOAa[1] + n_OOAn[1] + n_VVJH[1] + n_VVJS[1] + n_IIJH[1] + n_IIJS[1] + n_OOJH[1] + n_OOJS[1] 
-fa[1]<- (n_Aa[1]*ba)/(n_Aa[1]*ba + n_An[1]*bn)
-fn[1]<- (n_An[1]*bn)/(n_Aa[1]*ba + n_An[1]*bn)
-
+# fa[1]<- (n_Aa[1]*ba)/(n_Aa[1]*ba + n_An[1]*bn)
+# fn[1]<- (n_An[1]*bn)/(n_Aa[1]*ba + n_An[1]*bn)
+fa[1]<- (n_VVAa[1])/(n_VVAa[1] + n_VVAn[1])
+fn[1]<- (n_VVAn[1])/(n_VVAa[1] + n_VVAn[1])
 #recursions
 for (t in 1:timesteps)
 {
@@ -72,20 +73,28 @@ for (t in 1:timesteps)
     n_OOJS[t+1] <- (n_OOAa[t])*ba*p_as + (n_OOAn[t])*bn*p_ns
     
     #adult recruitment
-    n_VVAa[t+1] <- (n_VVJS[t] + n_VVJH[t])*(1-u[t])*fa[t]*(1-mu_s)
-    n_VVAn[t+1] <- (n_VVJS[t] + n_VVJH[t])*((1-u[t])*fn[t] + u[t])*(1-mu_s)
+    # n_VVAa[t+1] <- (n_VVJS[t] + n_VVJH[t])*(1-u[t])*fa[t]*(1-mu_s)
+    # n_VVAn[t+1] <- (n_VVJS[t] + n_VVJH[t])*((1-u[t])*fn[t] + u[t])*(1-mu_s)
+    # n_IIAa[t+1] <- (n_IIJS[t] + n_IIJH[t])*s*(1-mu_i)
+    # n_IIAn[t+1] <- (n_IIJS[t] + n_IIJH[t])*(1-s)*(1-mu_i)
+    # n_OOAa[t+1] <- (n_OOJS[t] + n_OOJH[t])*(n_Aa[t]/(n_Aa[t] + n_An[t]))*(1-u[t])*(1-mu_s)
+    # n_OOAn[t+1] <- (n_OOJS[t] + n_OOJH[t])*((1-u[t])*(n_An[t]/(n_Aa[t] + n_An[t])) + u[t])*(1-mu_s)
+    
+    n_VVAa[t+1] <- (n_VVJS[t] + n_VVJH[t])*(1-u[t])*fa[t]
+    n_VVAn[t+1] <- (n_VVJS[t] + n_VVJH[t])*((1-u[t])*fn[t] + u[t])
     n_IIAa[t+1] <- (n_IIJS[t] + n_IIJH[t])*s*(1-mu_i)
     n_IIAn[t+1] <- (n_IIJS[t] + n_IIJH[t])*(1-s)*(1-mu_i)
     n_OOAa[t+1] <- (n_OOJS[t] + n_OOJH[t])*(n_Aa[t]/(n_Aa[t] + n_An[t]))*(1-u[t])*(1-mu_s)
     n_OOAn[t+1] <- (n_OOJS[t] + n_OOJH[t])*((1-u[t])*(n_An[t]/(n_Aa[t] + n_An[t])) + u[t])*(1-mu_s)
     
-
     n_Aa[t+1] <- n_VVAa[t+1] + n_IIAa[t+1] + n_OOAa[t+1]
     n_An[t+1] <- n_VVAn[t+1] + n_IIAn[t+1] + n_OOAn[t+1]
     N[t+1] <- n_VVAa[t+1] + n_VVAn[t+1] + n_IIAa[t+1] + n_IIAn[t+1] + n_OOAa[t+1] + n_OOAn[t+1] + n_VVJH[t+1] + n_VVJS[t+1] + n_IIJH[t+1] + n_IIJS[t+1] + n_OOJH[t+1] + n_OOJS[t+1]
     u[t+1] <- rbinom(n=1,prob=U,size=1) #sample environment changing
-    fa[t+1]<- (n_Aa[t+1]*ba)/(n_Aa[t+1]*ba + n_An[t+1]*bn)
-    fn[t+1]<- (n_An[t+1]*bn)/(n_Aa[t+1]*ba + n_An[t+1]*bn)
+    # fa[t+1]<- (n_Aa[t+1]*ba)/(n_Aa[t+1]*ba + n_An[t+1]*bn)
+    # fn[t+1]<- (n_An[t+1]*bn)/(n_Aa[t+1]*ba + n_An[t+1]*bn)
+    fa[t+1]<- (n_VVAa[t+1])/(n_VVAa[t+1] + n_VVAn[t+1])
+    fn[t+1]<- (n_VVAn[t+1])/(n_VVAa[t+1] + n_VVAn[t+1])
 }
 
 # compute proportions of each strategy for summary plot
