@@ -1,7 +1,7 @@
 library(beepr)
 ########LOOPING GRAPH#######
 ###initial pop conditions
-timesteps <- 2000 #length of simulation
+timesteps <- 4000 #length of simulation
 
 ##parameters
 U <- c(0.01,0.05,0.1,0.2,0.3,0.4) #prob environment changes states
@@ -102,6 +102,23 @@ par(mar=c(2,2,2.25,0.1))
                     fn[t+1]<- (n_VVAn[t+1])/(n_VVAa[t+1] + n_VVAn[t+1])
                     # fa[t+1]<- (n_Aa[t+1])/(n_Aa[t+1] + n_An[t+1])
                     # fn[t+1]<- (n_An[t+1])/(n_Aa[t+1] + n_An[t+1])
+
+                    #normalize so math does not explode
+                    n_VVAa[t+1] <- n_VVAa[t+1]/N[t+1]
+                    n_VVAn[t+1] <- n_VVAn[t+1]/N[t+1] 
+                    n_OOAa[t+1] <- n_OOAa[t+1]/N[t+1]
+                    n_OOAn[t+1] <- n_OOAn[t+1]/N[t+1] 
+                    n_IIAa[t+1] <- n_IIAa[t+1]/N[t+1]
+                    n_IIAn[t+1] <- n_IIAn[t+1]/N[t+1]
+                    n_VVJH[t+1] <- n_VVJH[t+1]/N[t+1]
+                    n_VVJS[t+1] <- n_VVJS[t+1]/N[t+1] 
+                    n_OOJH[t+1] <- n_OOJH[t+1]/N[t+1]
+                    n_OOJS[t+1] <- n_OOJS[t+1]/N[t+1] 
+                    n_IIJH[t+1] <- n_IIJH[t+1]/N[t+1]
+                    n_IIJS[t+1] <- n_IIJS[t+1]/N[t+1]  
+                    n_Aa[t+1] <- n_Aa[t+1]/N[t+1]
+                    n_An[t+1] <- n_An[t+1]/N[t+1]
+                    N[t+1] <-  N[t+1]/  N[t+1]
                 }
 
             # compute proportions of each strategy for summary plot
