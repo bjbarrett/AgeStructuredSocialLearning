@@ -1,15 +1,15 @@
 ###initial pop conditions
-timesteps <- 500 #length of simulation
+timesteps <- 4000 #length of simulation
 
 ##parameters
 bn <- 1   ##avg broodsize of adult with non-adaptive behavior
-ba <- 4 ##avg broodsize of adult with adaptive behavior. ba > bn
-p_as <- 0.01  #prob an adapted adult produces stressed offspring
-p_ns <- 0.8  #prob an nonadapted adult produces stressed offspring
-s <- 0.7	#prob individual learner succesfully acquires adaptive behavior
-U <- 0.01 #prob environment changes states
-mu_s <- 0.1	#mortality rate of social learners
-mu_i <- 0.21 #mortality rate of individual learners
+ba <- 1.5 ##avg broodsize of adult with adaptive behavior. ba > bn
+p_as <- 0  #prob an adapted adult produces stressed offspring
+p_ns <- 1  #prob an nonadapted adult produces stressed offspring
+s <- .8	#prob individual learner succesfully acquires adaptive behavior
+U <- 0.15 #prob environment changes states
+mu_s <- 0	#mortality rate of social learners
+mu_i <- 0.1 #mortality rate of individual learners
 #mu_n <- 1 # excess mortality factor of non-adapted individuals (to be added at some point with overlapping generations)
 
 #create bins to store recursion values for each type
@@ -39,26 +39,26 @@ fn <- rep(0,timesteps + 1)		#weird fun-cundity metric for nonadapted vertical le
 
 #initial simulation values
 N0 <- 180
-n_VVAa[1] <- 200
-n_VVAn[1] <- 200
+n_VVAa[1] <- 1
+n_VVAn[1] <- 1
 n_IIAa[1] <- 200
 n_IIAn[1] <- 200
-n_OOAa[1] <- 1
-n_OOAn[1] <- 1
+n_OOAa[1] <- 200
+n_OOAn[1] <- 200
 n_An[1] <- n_VVAn[1] + n_IIAn[1] + n_OOAn[1]
 n_Aa[1] <- n_VVAa[1] + n_IIAa[1] + n_OOAa[1]
 
-n_VVJH[1] <- 100
-n_VVJS[1] <- 100
-n_IIJH[1] <- 100
-n_IIJS[1] <- 100
-n_OOJH[1] <- .5
-n_OOJS[1] <- .5
+n_VVJH[1] <- 1
+n_VVJS[1] <- 1
+n_IIJH[1] <- 200
+n_IIJS[1] <- 200
+n_OOJH[1] <- 200
+n_OOJS[1] <- 200
 
 u[1] <- 0
 N[1] <- n_VVAa[1] + n_VVAn[1] + n_IIAa[1] + n_IIAn[1] + n_OOAa[1] + n_OOAn[1] + n_VVJH[1] + n_VVJS[1] + n_IIJH[1] + n_IIJS[1] + n_OOJH[1] + n_OOJS[1] 
-fa[1]<- (n_Aa[1]*ba)/(n_Aa[1]*ba + n_An[1]*bn)
-fn[1]<- (n_An[1]*bn)/(n_Aa[1]*ba + n_An[1]*bn)
+fa[1]<- (n_VVAa[1]*ba)/(n_VVAa[1]*ba + n_VVAn[1]*bn)
+fn[1]<- (n_VVAn[1]*bn)/(n_VVAa[1]*ba + n_VVAn[1]*bn)
 # fa[1]<- (n_VVAa[1])/(n_VVAa[1] + n_VVAn[1])
 # fn[1]<- (n_VVAn[1])/(n_VVAa[1] + n_VVAn[1])
 #recursions
@@ -91,8 +91,6 @@ for (t in 1:timesteps)
     n_An[t+1] <- n_VVAn[t+1] + n_IIAn[t+1] + n_OOAn[t+1]
     N[t+1] <- n_VVAa[t+1] + n_VVAn[t+1] + n_IIAa[t+1] + n_IIAn[t+1] + n_OOAa[t+1] + n_OOAn[t+1] + n_VVJH[t+1] + n_VVJS[t+1] + n_IIJH[t+1] + n_IIJS[t+1] + n_OOJH[t+1] + n_OOJS[t+1]
     u[t+1] <- rbinom(n=1,prob=U,size=1) #sample environment changing
-    # fa[t+1]<- (n_Aa[t+1]*ba)/(n_Aa[t+1]*ba + n_An[t+1]*bn)
-    # fn[t+1]<- (n_An[t+1]*bn)/(n_Aa[t+1]*ba + n_An[t+1]*bn)
     fa[t+1]<- (n_VVAa[t+1])/(n_VVAa[t+1] + n_VVAn[t+1])
     fn[t+1]<- (n_VVAn[t+1])/(n_VVAa[t+1] + n_VVAn[t+1])
 }
@@ -101,6 +99,11 @@ for (t in 1:timesteps)
 p_VV <- ( n_VVJH + n_VVJS + n_VVAa + n_VVAn ) / N
 p_II <- ( n_IIJH + n_IIJS + n_IIAa + n_IIAn ) / N
 p_OO <- ( n_OOJH + n_OOJS + n_OOAa + n_OOAn ) / N
+
+
+p_VVA <- ( n_VVAa + n_VVAn ) / (n_VVAa + n_VVAn + n_IIAa + n_IIAn + n_OOAa + n_OOAn )
+p_IIA <- ( n_IIAa + n_IIAn ) / (n_VVAa + n_VVAn + n_IIAa + n_IIAn + n_OOAa + n_OOAn )
+p_OOA <- ( n_OOAa + n_OOAn ) / (n_VVAa + n_VVAn + n_IIAa + n_IIAn + n_OOAa + n_OOAn )
 
 q_VV <-  n_VVAa / ( n_VVAa + n_VVAn )
 q_II <-  n_IIAa / ( n_IIAa + n_IIAn )
@@ -114,12 +117,20 @@ q_OO <-  n_OOAa / ( n_OOAa + n_OOAn )
 plot( p_VV , ylim=c(0,1) , type="l" , col="violet")
 lines( 1:length(p_II) , p_II , col="red" )
 lines( 1:length(p_OO) , p_OO , col="black")
-
-lines( 1:length(q_VV) , q_VV , lty=2 , col="violet")
-lines( 1:length(q_II) , q_II , lty=2 , col="red" )
-lines( 1:length(q_OO) , q_OO , lty=2 , col="black")
-
 legend("topleft" , c("VV", "II", "OO") , lty=1 , lwd=c(1,1,1) , col=c("violet", "red", "black" ) , pch=c(15,15,15) ,bty='n')
+
+# plot( p_VVA , ylim=c(0,1) , type="l" , col="violet")
+# lines( 1:length(p_IIA) , p_II , col="red" )
+# lines( 1:length(p_OOA) , p_OO , col="black")
+# legend("topleft" , c("VV", "II", "OO") , lty=1 , lwd=c(1,1,1) , col=c("violet", "red", "black" ) , pch=c(15,15,15) ,bty='n')
+
+
+# plot( p_VV , ylim=c(0,1) , type="l" , col="white")
+# lines( 1:length(q_VV) , q_VV , lty=2 , col="violet")
+# lines( 1:length(q_II) , q_II , lty=2 , col="red" )
+# lines( 1:length(q_OO) , q_OO , lty=2 , col="black")
+# legend("topleft" , c("VV", "II", "OO") , lty=1 , lwd=c(1,1,1) , col=c("violet", "red", "black" ) , pch=c(15,15,15) ,bty='n')
+
 
 
 # age structure
@@ -135,4 +146,7 @@ legend("topleft" , c("VV", "II", "OO") , lty=1 , lwd=c(1,1,1) , col=c("violet", 
 # p_AOO <- ( n_OOAa + n_OOAn ) / ( n_OOJH + n_OOJS + n_OOAa + n_OOAn )
 # plot( p_JOO , ylim=c(0,1) , type="l" )
 
+
+     fa[t+1]<- (n_VVAa[t+1])/(n_VVAa[t+1] + n_VVAn[t+1])
+     fn[t+1]<- (n_VVAn[t+1])/(n_VVAa[t+1] + n_VVAn[t+1])
 
